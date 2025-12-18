@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegram Init Data Types</title>
+    <title>Telegram Init Data Formatter</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -11,427 +11,547 @@
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--tg-theme-bg-color, #ffffff);
-            color: var(--tg-theme-text-color, #000000);
-            padding: 16px;
-            line-height: 1.6;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
         }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
         h1 {
-            font-size: 20px;
+            color: white;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        /* User Profile Card */
+        .profile-card {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
             margin-bottom: 16px;
-            color: var(--tg-theme-text-color, #000000);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            text-align: center;
         }
-        h2 {
+
+        .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin: 0 auto 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: white;
+            font-weight: bold;
+            overflow: hidden;
+            border: 4px solid white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 4px;
+        }
+
+        .username {
             font-size: 16px;
-            margin: 20px 0 10px;
-            color: var(--tg-theme-hint-color, #999999);
-        }
-        .card {
-            background: var(--tg-theme-secondary-bg-color, #f5f5f5);
-            border-radius: 12px;
-            padding: 16px;
+            color: #667eea;
             margin-bottom: 12px;
         }
-        .field {
+
+        .user-id {
+            display: inline-block;
+            background: #f0f0f5;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            color: #666;
+            font-family: 'SF Mono', Monaco, monospace;
+        }
+
+        .badges {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .badge.premium {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #1a1a2e;
+        }
+
+        .badge.lang {
+            background: #e8f4fd;
+            color: #0088cc;
+        }
+
+        .badge.pm {
+            background: #e8fdf0;
+            color: #00a86b;
+        }
+
+        /* Data Cards */
+        .data-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .card-title {
+            font-size: 14px;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .data-row {
             display: flex;
             justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid var(--tg-theme-hint-color, #e0e0e0);
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f5;
         }
-        .field:last-child {
+
+        .data-row:last-child {
             border-bottom: none;
+            padding-bottom: 0;
         }
-        .field-name {
+
+        .data-row:first-of-type {
+            padding-top: 0;
+        }
+
+        .data-label {
+            font-size: 14px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .data-label .icon {
+            width: 20px;
+            text-align: center;
+        }
+
+        .data-value {
+            font-size: 14px;
+            color: #1a1a2e;
             font-weight: 600;
-            color: var(--tg-theme-text-color, #000000);
-        }
-        .field-value {
-            color: var(--tg-theme-link-color, #2481cc);
             text-align: right;
-            max-width: 60%;
             word-break: break-all;
+            max-width: 60%;
         }
-        .field-type {
+
+        .data-value.mono {
+            font-family: 'SF Mono', Monaco, monospace;
             font-size: 12px;
-            color: var(--tg-theme-hint-color, #999999);
+            background: #f5f5f7;
+            padding: 4px 8px;
+            border-radius: 6px;
         }
-        .badge {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            background: var(--tg-theme-button-color, #2481cc);
-            color: var(--tg-theme-button-text-color, #ffffff);
+
+        .data-value.hash {
+            font-size: 10px;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
-        .badge.optional {
-            background: var(--tg-theme-hint-color, #999999);
+
+        /* Input Section */
+        .input-section {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
-        pre {
-            background: #1e1e1e;
-            color: #d4d4d4;
-            padding: 16px;
-            border-radius: 8px;
-            overflow-x: auto;
+
+        .input-section textarea {
+            width: 100%;
+            height: 100px;
+            border: 2px solid #e0e0e5;
+            border-radius: 12px;
+            padding: 12px;
             font-size: 13px;
-            margin-top: 12px;
+            font-family: 'SF Mono', Monaco, monospace;
+            resize: vertical;
+            transition: border-color 0.2s;
         }
-        .comment { color: #6a9955; }
-        .keyword { color: #569cd6; }
-        .type { color: #4ec9b0; }
-        .string { color: #ce9178; }
-        .property { color: #9cdcfe; }
+
+        .input-section textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .input-section button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 12px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .input-section button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .input-section button:active {
+            transform: translateY(0);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: white;
+        }
+
+        .empty-state .icon {
+            font-size: 60px;
+            margin-bottom: 16px;
+        }
+
+        .empty-state p {
+            opacity: 0.9;
+            font-size: 16px;
+        }
+
+        /* Copy Button */
+        .copy-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            opacity: 0.5;
+            transition: opacity 0.2s;
+        }
+
+        .copy-btn:hover {
+            opacity: 1;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            color: rgba(255,255,255,0.7);
+            font-size: 13px;
+        }
+
+        .footer a {
+            color: white;
+            text-decoration: none;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        .data-card:nth-child(2) { animation-delay: 0.1s; }
+        .data-card:nth-child(3) { animation-delay: 0.2s; }
+        .data-card:nth-child(4) { animation-delay: 0.3s; }
     </style>
 </head>
 <body>
-    <h1>📱 Telegram Init Data</h1>
+    <div class="container">
+        <h1>📱 Telegram Init Data</h1>
 
-    <!-- Joriy ma'lumotlar -->
-    <div class="card" id="current-data">
-        <h2>Joriy Foydalanuvchi</h2>
-        <div id="user-info">Yuklanmoqda...</div>
-    </div>
+        <!-- Input Section -->
+        <div class="input-section">
+            <div class="card-title">Init Data kiriting</div>
+            <textarea id="initDataInput" placeholder="query_id=...&user=...&auth_date=...&hash=..."></textarea>
+            <button onclick="parseInitData()">🔍 Parse qilish</button>
+        </div>
 
-    <!-- TypeScript Interface -->
-    <h2>📝 TypeScript Interfacelar</h2>
-    
-    <div class="card">
-        <h3>TelegramUser</h3>
-        <div class="field">
-            <span><span class="field-name">id</span> <span class="badge">required</span></span>
-            <span class="field-type">number</span>
-        </div>
-        <div class="field">
-            <span><span class="field-name">first_name</span> <span class="badge">required</span></span>
-            <span class="field-type">string</span>
-        </div>
-        <div class="field">
-            <span><span class="field-name">last_name</span> <span class="badge optional">optional</span></span>
-            <span class="field-type">string</span>
-        </div>
-        <div class="field">
-            <span><span class="field-name">username</span> <span class="badge optional">optional</span></span>
-            <span class="field-type">string</span>
-        </div>
-        <div class="field">
-            <span><span class="field-name">language_code</span> <span class="badge optional">optional</span></span>
-            <span class="field-type">string</span>
-        </div>
-        <div class="field">
-            <span><span class="field-name">is_premium</span> <span class="badge optional">optional</span></span>
-            <span class="field-type">boolean</span>
-        </div>
-        <div class="field">
-            <span><span class="field-name">allows_write_to_pm</span> <span class="badge optional">optional</span></span>
-            <span class="field-type">boolean</span>
-        </div>
-        <div class="field">
-            <span><span class="field-name">photo_url</span> <span class="badge optional">optional</span></span>
-            <span class="field-type">string</span>
-        </div>
-    </div>
+        <!-- Results will be inserted here -->
+        <div id="results"></div>
 
-    <div class="card">
-        <h3>WebAppChat</h3>
-        <div class="field">
-            <span><span class="field-name">id</span> <span class="badge">required</span></span>
-            <span class="field-type">number</span>
+        <div class="footer">
+            Made with ❤️ for Telegram Mini Apps
         </div>
-        <div class="field">
-            <span><span class="field-name">type</span> <span class="badge">required</span></span>
-            <span class="field-type">'group' | 'supergroup' | 'channel'</span>
-        </div>
-        <div class="field">
-            <span><span class="field-name">title</span> <span class="badge">required</span></span>
-            <span class="field-type">string</span>
-        </div>
-        <div class="field">
-            <span><span class="field-name">username</span> <span class="badge optional">optional</span></span>
-            <span class="field-type">string</span>
-        </div>
-        <div class="field">
-            <span><span class="field-name">photo_url</span> <span class="badge optional">optional</span></span>
-            <span class="field-type">string</span>
-        </div>
-    </div>
-
-    <div class="card">
-        <h3>WebAppInitData</h3>
-        <div class="field">
-            <span><span class="field-name">query_id</span> <span class="badge optional">optional</span></span>
-            <span class="field-type">string</span>
-        </div>
-        <div class="field">
-            <span><span class="field-name">user</span> <span class="badge optional">optional</span></span>
-            <span class="field-type">TelegramUser</span>
-        </div>
-        <div class="field">
-            <span><span class="field-name">receiver</span> <span class="badge optional">optional</span></span>
-            <span class="field-type">TelegramUser</span>
-        </div>
-        <div class="field">
-            <span><span class="field-name">chat</span> <span class="badge optional">optional</span></span>
-            <span class="field-type">WebAppChat</span>
-        </div>
-        <div class="field">
-            <span><span class="field-name">chat_type</span> <span class="badge optional">optional</span></span>
-            <span class="field-type">'sender' | 'private' | 'group' | 'supergroup' | 'channel'</span>
-        </div>
-        <div class="field">
-            <span><span class="field-name">chat_instance</span> <span class="badge optional">optional</span></span>
-            <span class="field-type">string</span>
-        </div>
-        <div class="field">
-            <span><span class="field-name">start_param</span> <span class="badge optional">optional</span></span>
-            <span class="field-type">string</span>
-        </div>
-        <div class="field">
-            <span><span class="field-name">can_send_after</span> <span class="badge optional">optional</span></span>
-            <span class="field-type">number</span>
-        </div>
-        <div class="field">
-            <span><span class="field-name">auth_date</span> <span class="badge">required</span></span>
-            <span class="field-type">number</span>
-        </div>
-        <div class="field">
-            <span><span class="field-name">hash</span> <span class="badge">required</span></span>
-            <span class="field-type">string</span>
-        </div>
-    </div>
-
-    <!-- Kod namunasi -->
-    <h2>💻 Kod Namunasi</h2>
-    <pre><code><span class="comment">// Telegram WebApp ni olish</span>
-<span class="keyword">const</span> tg = window.Telegram.WebApp;
-
-<span class="comment">// Init data ni olish (raw string)</span>
-<span class="keyword">const</span> initData = tg.initData;
-
-<span class="comment">// Init data unsafe (parse qilingan)</span>
-<span class="keyword">const</span> initDataUnsafe = tg.initDataUnsafe;
-
-<span class="comment">// Foydalanuvchi ma'lumotlari</span>
-<span class="keyword">const</span> user = initDataUnsafe.<span class="property">user</span>;
-<span class="keyword">if</span> (user) {
-    console.log(<span class="string">'ID:'</span>, user.<span class="property">id</span>);
-    console.log(<span class="string">'Ism:'</span>, user.<span class="property">first_name</span>);
-    console.log(<span class="string">'Username:'</span>, user.<span class="property">username</span>);
-    console.log(<span class="string">'Premium:'</span>, user.<span class="property">is_premium</span>);
-}
-
-<span class="comment">// Chat ma'lumotlari (guruhdan ochilsa)</span>
-<span class="keyword">const</span> chat = initDataUnsafe.<span class="property">chat</span>;
-<span class="keyword">if</span> (chat) {
-    console.log(<span class="string">'Chat ID:'</span>, chat.<span class="property">id</span>);
-    console.log(<span class="string">'Chat nomi:'</span>, chat.<span class="property">title</span>);
-}
-
-<span class="comment">// Start parametri (?startapp=...)</span>
-<span class="keyword">const</span> startParam = initDataUnsafe.<span class="property">start_param</span>;
-
-<span class="comment">// Tema ranglari</span>
-<span class="keyword">const</span> themeParams = tg.<span class="property">themeParams</span>;
-console.log(<span class="string">'Background:'</span>, themeParams.<span class="property">bg_color</span>);
-console.log(<span class="string">'Text color:'</span>, themeParams.<span class="property">text_color</span>);</code></pre>
-
-    <!-- Raw Init Data -->
-    <h2>🔐 Raw Init Data</h2>
-    <div class="card">
-        <pre id="raw-init-data" style="background: transparent; color: inherit; padding: 0;">Yuklanmoqda...</pre>
     </div>
 
     <script>
-        // ============================================
-        // TYPESCRIPT INTERFACE (JavaScript uchun JSDoc)
-        // ============================================
-
-        /**
-         * @typedef {Object} TelegramUser
-         * @property {number} id - Foydalanuvchi unikal ID
-         * @property {string} first_name - Ism
-         * @property {string} [last_name] - Familiya
-         * @property {string} [username] - @username
-         * @property {string} [language_code] - Til kodi (uz, en, ru)
-         * @property {boolean} [is_premium] - Premium obunachi
-         * @property {boolean} [added_to_attachment_menu] - Attachment menuga qo'shilgan
-         * @property {boolean} [allows_write_to_pm] - PM ga yozishga ruxsat
-         * @property {string} [photo_url] - Profil rasm URL
-         */
-
-        /**
-         * @typedef {Object} WebAppChat
-         * @property {number} id - Chat ID
-         * @property {'group'|'supergroup'|'channel'} type - Chat turi
-         * @property {string} title - Chat nomi
-         * @property {string} [username] - Chat username
-         * @property {string} [photo_url] - Chat rasm URL
-         */
-
-        /**
-         * @typedef {Object} WebAppInitData
-         * @property {string} [query_id] - Inline query ID
-         * @property {TelegramUser} [user] - Joriy foydalanuvchi
-         * @property {TelegramUser} [receiver] - Qabul qiluvchi (inline rejimda)
-         * @property {WebAppChat} [chat] - Chat ma'lumotlari
-         * @property {'sender'|'private'|'group'|'supergroup'|'channel'} [chat_type] - Chat turi
-         * @property {string} [chat_instance] - Chat instance identifikatori
-         * @property {string} [start_param] - ?startapp= parametri
-         * @property {number} [can_send_after] - Xabar yuborish vaqti
-         * @property {number} auth_date - Autentifikatsiya sanasi (Unix timestamp)
-         * @property {string} hash - Ma'lumotlar hash (tekshirish uchun)
-         */
-
-        /**
-         * @typedef {Object} ThemeParams
-         * @property {string} [bg_color] - Orqa fon rangi
-         * @property {string} [text_color] - Matn rangi
-         * @property {string} [hint_color] - Hint matn rangi
-         * @property {string} [link_color] - Havola rangi
-         * @property {string} [button_color] - Tugma rangi
-         * @property {string} [button_text_color] - Tugma matn rangi
-         * @property {string} [secondary_bg_color] - Ikkinchi orqa fon
-         * @property {string} [header_bg_color] - Header orqa fon
-         * @property {string} [accent_text_color] - Accent matn rangi
-         * @property {string} [section_bg_color] - Section orqa fon
-         * @property {string} [section_header_text_color] - Section header rangi
-         * @property {string} [subtitle_text_color] - Subtitle rangi
-         * @property {string} [destructive_text_color] - Destructive rangi
-         */
-
-        // ============================================
-        // INIT DATA NI OLISH VA KO'RSATISH
-        // ============================================
-
+        // Telegram WebApp dan avtomatik olish
         document.addEventListener('DOMContentLoaded', function() {
             const tg = window.Telegram?.WebApp;
             
-            if (!tg) {
-                document.getElementById('user-info').innerHTML = 
-                    '<p style="color: red;">⚠️ Telegram WebApp topilmadi. Bu sahifani Telegram Mini App ichida oching.</p>';
-                document.getElementById('raw-init-data').textContent = 'Mavjud emas';
-                return;
-            }
-
-            // WebApp ni tayyor qilish
-            tg.ready();
-            tg.expand();
-
-            const user = tg.initDataUnsafe?.user;
-            const chat = tg.initDataUnsafe?.chat;
-
-            // Foydalanuvchi ma'lumotlarini ko'rsatish
-            if (user) {
-                let html = `
-                    <div class="field">
-                        <span class="field-name">ID</span>
-                        <span class="field-value">${user.id}</span>
-                    </div>
-                    <div class="field">
-                        <span class="field-name">Ism</span>
-                        <span class="field-value">${user.first_name}</span>
-                    </div>
-                `;
+            if (tg && tg.initData) {
+                tg.ready();
+                tg.expand();
                 
-                if (user.last_name) {
-                    html += `
-                        <div class="field">
-                            <span class="field-name">Familiya</span>
-                            <span class="field-value">${user.last_name}</span>
-                        </div>
-                    `;
+                // Tema ranglarini qo'llash
+                if (tg.themeParams.bg_color) {
+                    document.body.style.background = tg.themeParams.bg_color;
                 }
                 
-                if (user.username) {
-                    html += `
-                        <div class="field">
-                            <span class="field-name">Username</span>
-                            <span class="field-value">@${user.username}</span>
-                        </div>
-                    `;
-                }
-                
-                if (user.language_code) {
-                    html += `
-                        <div class="field">
-                            <span class="field-name">Til</span>
-                            <span class="field-value">${user.language_code.toUpperCase()}</span>
-                        </div>
-                    `;
-                }
-                
-                html += `
-                    <div class="field">
-                        <span class="field-name">Premium</span>
-                        <span class="field-value">${user.is_premium ? '✅ Ha' : '❌ Yo\'q'}</span>
-                    </div>
-                `;
-
-                document.getElementById('user-info').innerHTML = html;
-            } else {
-                document.getElementById('user-info').innerHTML = 
-                    '<p>Foydalanuvchi ma\'lumotlari mavjud emas</p>';
-            }
-
-            // Raw init data
-            if (tg.initData) {
-                document.getElementById('raw-init-data').textContent = 
-                    decodeURIComponent(tg.initData);
-            } else {
-                document.getElementById('raw-init-data').textContent = 'Mavjud emas';
+                document.getElementById('initDataInput').value = tg.initData;
+                parseInitData();
             }
         });
 
-        // ============================================
-        // FOYDALI FUNKSIYALAR
-        // ============================================
+        function parseInitData() {
+            const input = document.getElementById('initDataInput').value.trim();
+            const resultsDiv = document.getElementById('results');
+            
+            if (!input) {
+                resultsDiv.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">📋</div>
+                        <p>Init data kiriting yoki<br>Telegram Mini App ichida oching</p>
+                    </div>
+                `;
+                return;
+            }
 
-        /**
-         * Init data ni serverga yuborish
-         * @param {string} initData - Raw init data string
-         * @returns {Promise<boolean>}
-         */
-        async function validateInitData(initData) {
-            const response = await fetch('/api/validate', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ initData })
+            try {
+                const params = new URLSearchParams(input);
+                const data = {};
+                
+                for (const [key, value] of params) {
+                    try {
+                        data[key] = JSON.parse(value);
+                    } catch {
+                        data[key] = value;
+                    }
+                }
+
+                renderResults(data);
+            } catch (error) {
+                resultsDiv.innerHTML = `
+                    <div class="data-card">
+                        <div class="card-title" style="color: #e74c3c;">❌ Xatolik</div>
+                        <p style="color: #666;">Init data noto'g'ri formatda</p>
+                    </div>
+                `;
+            }
+        }
+
+        function renderResults(data) {
+            const resultsDiv = document.getElementById('results');
+            let html = '';
+
+            // User Profile Card
+            if (data.user) {
+                const user = data.user;
+                const initials = (user.first_name?.[0] || '') + (user.last_name?.[0] || '');
+                const fullName = [user.first_name, user.last_name].filter(Boolean).join(' ');
+                
+                html += `
+                    <div class="profile-card animate">
+                        <div class="avatar">
+                            ${user.photo_url 
+                                ? `<img src="${user.photo_url}" alt="Avatar" onerror="this.parentElement.innerHTML='${initials}'">`
+                                : initials
+                            }
+                        </div>
+                        <div class="user-name">${fullName || 'No Name'}</div>
+                        ${user.username ? `<div class="username">@${user.username}</div>` : ''}
+                        <div class="user-id">${user.id}</div>
+                        <div class="badges">
+                            ${user.is_premium ? '<span class="badge premium">⭐ Premium</span>' : ''}
+                            ${user.language_code ? `<span class="badge lang">🌐 ${user.language_code.toUpperCase()}</span>` : ''}
+                            ${user.allows_write_to_pm ? '<span class="badge pm">✉️ PM ruxsat</span>' : ''}
+                        </div>
+                    </div>
+                `;
+
+                // User Details Card
+                html += `
+                    <div class="data-card animate">
+                        <div class="card-title">👤 Foydalanuvchi ma'lumotlari</div>
+                        <div class="data-row">
+                            <span class="data-label"><span class="icon">🆔</span> ID</span>
+                            <span class="data-value mono">${user.id}</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="data-label"><span class="icon">👤</span> Ism</span>
+                            <span class="data-value">${user.first_name || '—'}</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="data-label"><span class="icon">👥</span> Familiya</span>
+                            <span class="data-value">${user.last_name || '—'}</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="data-label"><span class="icon">@</span> Username</span>
+                            <span class="data-value">${user.username ? '@' + user.username : '—'}</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="data-label"><span class="icon">🌐</span> Til</span>
+                            <span class="data-value">${user.language_code?.toUpperCase() || '—'}</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="data-label"><span class="icon">⭐</span> Premium</span>
+                            <span class="data-value">${user.is_premium ? '✅ Ha' : '❌ Yo\'q'}</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="data-label"><span class="icon">✉️</span> PM ruxsat</span>
+                            <span class="data-value">${user.allows_write_to_pm ? '✅ Ha' : '❌ Yo\'q'}</span>
+                        </div>
+                        ${user.photo_url ? `
+                        <div class="data-row">
+                            <span class="data-label"><span class="icon">🖼️</span> Rasm URL</span>
+                            <span class="data-value mono hash">${user.photo_url}</span>
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+            }
+
+            // Chat Info (if exists)
+            if (data.chat) {
+                const chat = data.chat;
+                html += `
+                    <div class="data-card animate">
+                        <div class="card-title">💬 Chat ma'lumotlari</div>
+                        <div class="data-row">
+                            <span class="data-label"><span class="icon">🆔</span> Chat ID</span>
+                            <span class="data-value mono">${chat.id}</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="data-label"><span class="icon">📝</span> Nomi</span>
+                            <span class="data-value">${chat.title || '—'}</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="data-label"><span class="icon">📂</span> Turi</span>
+                            <span class="data-value">${chat.type || '—'}</span>
+                        </div>
+                        ${chat.username ? `
+                        <div class="data-row">
+                            <span class="data-label"><span class="icon">@</span> Username</span>
+                            <span class="data-value">@${chat.username}</span>
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+            }
+
+            // Auth & Security Info
+            html += `
+                <div class="data-card animate">
+                    <div class="card-title">🔐 Autentifikatsiya</div>
+                    ${data.query_id ? `
+                    <div class="data-row">
+                        <span class="data-label"><span class="icon">🔑</span> Query ID</span>
+                        <span class="data-value mono">${data.query_id}</span>
+                    </div>
+                    ` : ''}
+                    ${data.auth_date ? `
+                    <div class="data-row">
+                        <span class="data-label"><span class="icon">📅</span> Auth Date</span>
+                        <span class="data-value">${formatDate(data.auth_date)}</span>
+                    </div>
+                    ` : ''}
+                    ${data.signature ? `
+                    <div class="data-row">
+                        <span class="data-label"><span class="icon">✍️</span> Signature</span>
+                        <span class="data-value mono hash" title="${data.signature}">${data.signature.substring(0, 20)}...</span>
+                    </div>
+                    ` : ''}
+                    ${data.hash ? `
+                    <div class="data-row">
+                        <span class="data-label"><span class="icon">🔒</span> Hash</span>
+                        <span class="data-value mono hash" title="${data.hash}">${data.hash.substring(0, 20)}...</span>
+                    </div>
+                    ` : ''}
+                    ${data.start_param ? `
+                    <div class="data-row">
+                        <span class="data-label"><span class="icon">🚀</span> Start Param</span>
+                        <span class="data-value mono">${data.start_param}</span>
+                    </div>
+                    ` : ''}
+                    ${data.chat_type ? `
+                    <div class="data-row">
+                        <span class="data-label"><span class="icon">💬</span> Chat Type</span>
+                        <span class="data-value">${data.chat_type}</span>
+                    </div>
+                    ` : ''}
+                    ${data.chat_instance ? `
+                    <div class="data-row">
+                        <span class="data-label"><span class="icon">🏷️</span> Chat Instance</span>
+                        <span class="data-value mono hash">${data.chat_instance}</span>
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+
+            // Raw JSON
+            html += `
+                <div class="data-card animate">
+                    <div class="card-title">📄 Raw JSON</div>
+                    <pre style="background: #f5f5f7; padding: 12px; border-radius: 8px; overflow-x: auto; font-size: 11px; font-family: 'SF Mono', Monaco, monospace; color: #333;">${JSON.stringify(data, null, 2)}</pre>
+                </div>
+            `;
+
+            resultsDiv.innerHTML = html;
+        }
+
+        function formatDate(timestamp) {
+            const date = new Date(timestamp * 1000);
+            return date.toLocaleString('uz-UZ', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
             });
-            return response.ok;
         }
 
-        /**
-         * Foydalanuvchi ma'lumotlarini olish
-         * @returns {TelegramUser|null}
-         */
-        function getUser() {
-            return window.Telegram?.WebApp?.initDataUnsafe?.user || null;
-        }
-
-        /**
-         * Chat ma'lumotlarini olish
-         * @returns {WebAppChat|null}
-         */
-        function getChat() {
-            return window.Telegram?.WebApp?.initDataUnsafe?.chat || null;
-        }
-
-        /**
-         * Start parametrini olish
-         * @returns {string|null}
-         */
-        function getStartParam() {
-            return window.Telegram?.WebApp?.initDataUnsafe?.start_param || null;
-        }
-
-        /**
-         * Tema ranglarini olish
-         * @returns {ThemeParams}
-         */
-        function getThemeParams() {
-            return window.Telegram?.WebApp?.themeParams || {};
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                // Could add a toast notification here
+            });
         }
     </script>
 </body>
 </html>
-</code>
